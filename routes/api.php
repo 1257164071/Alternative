@@ -14,6 +14,8 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:api')->get('/user', function (Request $request) {
-    return $request->user();
+
+Route::prefix('admin')->namespace('Admin')->group(function() {
+   Route::post('authorizations', 'AuthorizationsController@store')->name('admin.authorizations.store');
+
 });
