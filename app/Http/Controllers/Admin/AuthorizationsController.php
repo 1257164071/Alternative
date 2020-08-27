@@ -32,4 +32,5 @@ class AuthorizationsController extends Controller
         ],201);
     }
 
+
 }
