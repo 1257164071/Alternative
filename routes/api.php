@@ -16,7 +16,6 @@ use Illuminate\Support\Facades\Route;
 
 
 Route::prefix('admin')->namespace('Admin')->group(function() {
-    config()->set('auth.defaults.guard', 'admin');
 
     Route::post('authorizations', 'AuthorizationsController@store')->name('admin.authorizations.store');
 
