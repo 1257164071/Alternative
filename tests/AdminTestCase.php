@@ -10,7 +10,7 @@ abstract class AdminTestCase extends TestCase
     protected function singIn($admin = null)
     {
         $admin = $admin ?: create(Admin::class);
-        $this->actingAs($admin);
+        $this->actingAs($admin,'admin');
         return $this;
     }
 

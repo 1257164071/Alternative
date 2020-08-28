@@ -7,7 +7,7 @@ use Faker\Generator as Faker;
 
 $factory->define(Admin::class, function (Faker $faker) {
     return [
-        'username' => 'admin',
+        'username' => $faker->name,
         'password' => bcrypt(123456),
         'name'  =>  'Administrator',
     ];

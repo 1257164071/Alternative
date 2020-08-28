@@ -9,12 +9,6 @@ use Illuminate\Http\Request;
 class AuthorizationsController extends Controller
 {
 
-    public function username()
-    {
-        return 'username';
-    }
-
-    //
     public function store(Request $request)
     {
         $this->validate(request(), [

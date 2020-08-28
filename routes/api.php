@@ -16,6 +16,13 @@ use Illuminate\Support\Facades\Route;
 
 
 Route::prefix('admin')->namespace('Admin')->group(function() {
-   Route::post('authorizations', 'AuthorizationsController@store')->name('admin.authorizations.store');
+    config()->set('auth.defaults.guard', 'admin');
+
+    Route::post('authorizations', 'AuthorizationsController@store')->name('admin.authorizations.store');
+
+    Route::middleware('jwt.role:admin', 'jwt.auth')->group(function() {
+        config()->set('auth.defaults.guard', 'admin');
+        Route::get('admin', 'AdminsController@me');
+    });
 
 });
