@@ -21,7 +21,11 @@ Route::prefix('admin')->namespace('Admin')->group(function() {
 
     Route::middleware('jwt.role:admin', 'jwt.auth')->group(function() {
         config()->set('auth.defaults.guard', 'admin');
-        Route::get('admin', 'AdminsController@me');
+        Route::post('admin', 'AdminsController@me');
+
+
+        Route::get('auth_group', 'AuthGroupsController@index');
+        Route::post('auth_group', 'AuthGroupsController@store');
     });
 
 });
