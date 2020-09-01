@@ -25,7 +25,9 @@ Route::prefix('admin')->namespace('Admin')->group(function() {
 
 
         Route::get('auth_group', 'AuthGroupsController@index');
-        Route::post('auth_group', 'AuthGroupsController@store');
+
+        Route::get('role', 'RolesController@index');
+        Route::post('role', 'RolesController@store');
     });
 
 });
