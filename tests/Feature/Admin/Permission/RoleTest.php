@@ -48,5 +48,8 @@ class RoleTest extends TestCase
     }
 
     /** @test */
-//    public function
+    public function bind_role_auth_group()
+    {
+
+    }
 }
