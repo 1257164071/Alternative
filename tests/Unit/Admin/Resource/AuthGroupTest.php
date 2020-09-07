@@ -19,9 +19,4 @@ class AuthGroupTest extends AdminTestCase
         $this->assertEqualsIgnoringCase($AuthGroup->toArray(),$resource->resolve());
     }
 
-    /** @test */
-    public function can_view_role()
-    {
-
-    }
 }

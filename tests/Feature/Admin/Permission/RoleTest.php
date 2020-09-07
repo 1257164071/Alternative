@@ -111,21 +111,4 @@ class RoleTest extends TestCase
             ->assertJsonMissing(['id' => $ids[2]]);
     }
 
-    /** @test */
-    public function test()
-    {
-        $auth = $this->signJwt(create(Admin::class));
-        $role = create(Role::class);
-        $list = factory(AuthGroup::class,2)->create();
-        foreach ($list as $key => $val) {
-            create(AuthGroup::class,[
-                'parent_id' => $val['id'],
-            ],1);
-        }
-        $ids = AuthGroup::get()->pluck('id')->toArray();
-        $role->auth_groups()->attach($ids[1]);
-        $this->json('GET', '/api/admin/role/' . $role->id . '/auth-group', [], $auth);
-
-
-    }
 }

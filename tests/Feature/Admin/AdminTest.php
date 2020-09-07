@@ -17,7 +17,6 @@ class AdminTest extends AdminTestCase
     public function guests_can_not_get_self_info()
     {
         $this->withExceptionHandling();
-        $this->singIn();
         $this->json('GET', '/api/admin/admin')->assertStatus(401);
     }
 
