@@ -4,6 +4,14 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * App\Models\AuthGroup
+ *
+ * @method static \Illuminate\Database\Eloquent\Builder|AuthGroup newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|AuthGroup newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|AuthGroup query()
+ * @mixin \Eloquent
+ */
 class AuthGroup extends Model
 {
     //

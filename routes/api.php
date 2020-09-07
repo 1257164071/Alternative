@@ -28,6 +28,9 @@ Route::prefix('admin')->namespace('Admin')->group(function() {
 
         Route::get('role', 'RolesController@index');
         Route::post('role', 'RolesController@store');
+
+        Route::post('role/{role}/auth-group', 'RolesController@bindAuthGroup');
+        Route::get('role/{role}/auth-group', 'RolesController@roleAuthGroup');
     });
 
 });
