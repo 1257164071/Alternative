@@ -16,7 +16,7 @@ class JWTRoleAuth extends BaseMiddleware
      * @param  \Closure  $next
      * @return mixed
      */
-    public function handle($request, Closure $next, $role = null)
+    public function handle($request, $next, $role = null)
     {
         try {
             // 解析token角色
@@ -30,6 +30,7 @@ class JWTRoleAuth extends BaseMiddleware
             return $next($request);
         }
         // 判断token角色。
+
         if ($tokenRole != $role) {
             throw new UnauthorizedHttpException('jwt-auth', 'User role error');
         }
