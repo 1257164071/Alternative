@@ -28,9 +28,12 @@ Route::prefix('admin')->namespace('Admin')->group(function() {
 
         Route::get('role', 'RolesController@index');
         Route::post('role', 'RolesController@store');
+        Route::put('role/{role}', 'RolesController@update');
+        Route::delete('role/{role}', 'RolesController@destroy');
 
         Route::post('role/{role}/auth-group', 'RolesController@bindAuthGroup');
         Route::get('role/{role}/auth-group', 'RolesController@roleAuthGroup');
     });
+    Route::get('auth_group_tree', 'AuthGroupsController@treeIndex');
 
 });

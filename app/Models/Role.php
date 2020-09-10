@@ -17,8 +17,15 @@ class Role extends Model
     //
     protected $fillable = ['guard', 'name', 'remark'];
 
+    protected $appends = ['auth_group_ids'];
+
     public function auth_groups()
     {
         return $this->belongsToMany(AuthGroup::class,'auth_group_role');
+    }
+
+    public function getAuthGroupIdsAttribute ()
+    {
+        return $this->auth_groups->pluck('id')->toArray();
     }
 }

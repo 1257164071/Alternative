@@ -30,4 +30,21 @@ class AuthGroupTest extends AdminTestCase
         $this->assertEquals(40 ,$result['meta']['total']);
     }
 
+    /** @test */
+    public function admin_can_get_auth_groups_list()
+    {
+        $auth = $this->signJwt(create(Admin::class));
+        $auth = $this->signJwt(create(Admin::class));
+        factory(AuthGroup::class, 5)->create()->each(function ($item){
+            create(AuthGroup::class,[
+                'parent_id' => $item->id,
+                'type'  =>  rand(0,1)
+            ],5);
+        });
+        $result = $this->json('GET', '/api/admin/auth_group_tree', [], $auth);
+        $result->assertStatus(200);
+        $this->assertCount(5, $result['data']);
+        $this->assertCount(5, $result['data'][0]['children']);
+    }
+
 }

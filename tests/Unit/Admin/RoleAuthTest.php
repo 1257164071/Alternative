@@ -32,6 +32,4 @@ class RoleAuthTest extends AdminTestCase
         $this->assertSame($request, $response);
     }
 
-    /** @test */
-
 }

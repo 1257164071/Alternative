@@ -43,9 +43,15 @@ class RoleTest extends TestCase
         $auth = $this->signJwt(create(Admin::class));
         $role = make(Role::class);
         $this->assertCount(0, Role::all());
+        $auth_group = create(AuthGroup::class, [],4);
+        $role->bind_auth_group_ids = $auth_group->pluck('id')->toArray();
+        create(AuthGroup::class);
         $result = $this->json('POST', '/api/admin/role', $role->toArray(), $auth);
         $result->assertStatus(201);
+
+        $this->assertCount(5, AuthGroup::all());
         $this->assertCount(1, Role::all());
+        $this->assertCount(4, Role::first()->auth_groups);
     }
 
     /** @test */
@@ -110,5 +116,34 @@ class RoleTest extends TestCase
             ->assertJsonFragment(['id' => $ids[1]])
             ->assertJsonMissing(['id' => $ids[2]]);
     }
+
+    /** @test */
+    public function can_edit_role_list()
+    {
+        $auth = $this->signJwt(create(Admin::class));
+        $role = create(Role::class);
+        $authgroup = create(AuthGroup::class);
+
+        $role->name = '123456fds';
+        $role->bind_auth_group_ids = [$authgroup->id];
+        $result = $this->json('PUT', '/api/admin/role/' . $role->id, $role->toArray(), $auth );
+        $result->assertStatus(200);
+        $role = Role::first();
+        $this->assertEquals($role->name,'123456fds');
+        $this->assertSame($role->auth_group_ids, [$authgroup->id]);
+    }
+
+    /** @test */
+    public function admin_can_delete_role()
+    {
+        $auth = $this->signJwt(create(Admin::class));
+        $role = create(Role::class);
+        $this->assertCount(1, Role::all());
+        $result = $this->json('DELETE', '/api/admin/role/' . $role->id, [], $auth);
+        $result->assertStatus(204);
+        $this->assertCount(0, Role::all());
+    }
+
+
 
 }

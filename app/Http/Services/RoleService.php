@@ -20,7 +20,14 @@ class RoleService
                 if ($authGroup->type == AuthGroup::TYPE_OPERATE) {
                     return $data;
                 }
-                $data['children'] = $this->getRoleTree($authGroup->id, $all);
+                $data['children'] = $this->getRoleTree($authGroup->id, $all)->toArray();
+                if ($data['children'] != null){
+                    $i = 0;
+                    foreach ($data['children'] as $key => $val) {
+                        $data['children'][$i++] = $val;
+                        unset($data['children'][$key]);
+                    }
+                }
                 return $data;
             });
     }

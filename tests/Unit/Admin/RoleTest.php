@@ -2,6 +2,7 @@
 
 namespace Tests\Unit\Admin;
 
+use App\Models\Admin;
 use App\Models\AuthGroup;
 use App\Models\Role;
 use App\Services\RoleService;
@@ -52,6 +53,21 @@ class RoleTest extends AdminTestCase
         $this->assertTrue($service->authorize($role, $auth_group->get(1)->rule));
         $this->expectException('App\Exceptions\InvalidRequestException');
         $service->authorize($role->id, $auth_group->get(2)->rule);
+    }
+
+    /** @test */
+    public function get_admin_auth_keys()
+    {
+        $role = create(Role::class);
+        factory(AuthGroup::class, 5)->create()->each(function ($item){
+            create(AuthGroup::class,[
+                'parent_id' => $item->id,
+                'type'  =>  rand(0,1)
+            ],5);
+        });
+        $auth_group = AuthGroup::all();
+        $role->auth_groups()->attach($auth_group->pluck('id')->toArray());
+        $this->assertCount(AuthGroup::count('*'),$role->auth_group_ids);
     }
 
 }
