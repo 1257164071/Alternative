@@ -21,7 +21,7 @@ Route::prefix('admin')->namespace('Admin')->group(function() {
 
     Route::middleware('jwt.role:admin', 'jwt.auth')->group(function() {
         config()->set('auth.defaults.guard', 'admin');
-        Route::get('admin', 'AdminsController@me');
+        Route::get('me', 'AdminsController@me');
 
 
         Route::get('auth_group', 'AuthGroupsController@index');
@@ -30,10 +30,14 @@ Route::prefix('admin')->namespace('Admin')->group(function() {
         Route::post('role', 'RolesController@store');
         Route::put('role/{role}', 'RolesController@update');
         Route::delete('role/{role}', 'RolesController@destroy');
-
+        Route::get('auth_group_tree', 'AuthGroupsController@treeIndex');
         Route::post('role/{role}/auth-group', 'RolesController@bindAuthGroup');
         Route::get('role/{role}/auth-group', 'RolesController@roleAuthGroup');
+
+        Route::get('admins', 'AdminsController@index');
+        Route::post('admins', 'AdminsController@store');
+        Route::delete('admins/{admin}', 'AdminsController@destroy');
+        Route::put('admins/{admin}', 'AdminsController@update');
     });
-    Route::get('auth_group_tree', 'AuthGroupsController@treeIndex');
 
 });

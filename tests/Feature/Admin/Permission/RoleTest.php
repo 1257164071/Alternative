@@ -43,7 +43,7 @@ class RoleTest extends TestCase
         $auth = $this->signJwt(create(Admin::class));
         $role = make(Role::class);
         $this->assertCount(0, Role::all());
-        $auth_group = create(AuthGroup::class, [],4);
+        $auth_group = create(AuthGroup::class, [], 4);
         $role->bind_auth_group_ids = $auth_group->pluck('id')->toArray();
         create(AuthGroup::class);
         $result = $this->json('POST', '/api/admin/role', $role->toArray(), $auth);
@@ -80,7 +80,7 @@ class RoleTest extends TestCase
         $this->withExceptionHandling();
         $auth = $this->signJwt(create(Admin::class));
         $role = create(Role::class);
-        $this->json('POST', '/api/admin/role/' . $role->id . '/auth-group', [] , $auth)->assertJsonValidationErrors('auth_group_ids');
+        $this->json('POST', '/api/admin/role/' . $role->id . '/auth-group', [], $auth)->assertJsonValidationErrors('auth_group_ids');
     }
 
     /** @test */
@@ -88,13 +88,13 @@ class RoleTest extends TestCase
     {
         $auth = $this->signJwt(create(Admin::class));
         $role = create(Role::class);
-        $list = factory(AuthGroup::class,10)->create();
+        $list = factory(AuthGroup::class, 10)->create();
 
         $this->assertCount(0, $role->auth_groups->all());
         $data = [
             'auth_group_ids' => $list->pluck('id')->toArray(),
         ];
-        $this->json('POST', '/api/admin/role/' . $role->id . '/auth-group', $data , $auth);
+        $this->json('POST', '/api/admin/role/' . $role->id . '/auth-group', $data, $auth);
         $this->assertCount(10, $role->refresh()->auth_groups->all());
     }
 
@@ -103,11 +103,11 @@ class RoleTest extends TestCase
     {
         $auth = $this->signJwt(create(Admin::class));
         $role = create(Role::class);
-        $list = factory(AuthGroup::class,2)->create();
+        $list = factory(AuthGroup::class, 2)->create();
         foreach ($list as $key => $val) {
-            create(AuthGroup::class,[
+            create(AuthGroup::class, [
                 'parent_id' => $val['id'],
-            ],1);
+            ], 1);
         }
         $ids = AuthGroup::get()->pluck('id')->toArray();
         $role->auth_groups()->attach($ids[1]);
@@ -126,10 +126,10 @@ class RoleTest extends TestCase
 
         $role->name = '123456fds';
         $role->bind_auth_group_ids = [$authgroup->id];
-        $result = $this->json('PUT', '/api/admin/role/' . $role->id, $role->toArray(), $auth );
+        $result = $this->json('PUT', '/api/admin/role/' . $role->id, $role->toArray(), $auth);
         $result->assertStatus(200);
         $role = Role::first();
-        $this->assertEquals($role->name,'123456fds');
+        $this->assertEquals($role->name, '123456fds');
         $this->assertSame($role->auth_group_ids, [$authgroup->id]);
     }
 
@@ -143,7 +143,6 @@ class RoleTest extends TestCase
         $result->assertStatus(204);
         $this->assertCount(0, Role::all());
     }
-
 
 
 }

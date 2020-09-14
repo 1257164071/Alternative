@@ -37,7 +37,7 @@ class Admin extends Authenticatable implements JWTSubject
     const GUARD_NAME = 'admin';
 
     protected $fillable = [
-        'password',
+        'password', 'username', 'name', 'avatar', 'role_id',
     ];
     protected $hidden = [
         'password', 'remember_token',
