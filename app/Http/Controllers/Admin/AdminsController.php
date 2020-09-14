@@ -49,7 +49,6 @@ class AdminsController extends Controller
 
     public function update(Admin $admin,Request $request)
     {
-
         $this->validate($request, [
             'username' => ['unique:admins'],
         ]);

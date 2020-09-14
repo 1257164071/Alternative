@@ -34,7 +34,6 @@ class AuthGroupTest extends AdminTestCase
     public function admin_can_get_auth_groups_list()
     {
         $auth = $this->signJwt(create(Admin::class));
-        $auth = $this->signJwt(create(Admin::class));
         factory(AuthGroup::class, 5)->create()->each(function ($item){
             create(AuthGroup::class,[
                 'parent_id' => $item->id,

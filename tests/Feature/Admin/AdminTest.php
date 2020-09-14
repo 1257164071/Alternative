@@ -4,7 +4,6 @@ namespace Tests\Feature\Admin;
 
 use App\Models\Admin;
 use App\Models\Role;
-use http\Client\Request;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Tests\AdminTestCase;
@@ -73,9 +72,9 @@ class AdminTest extends AdminTestCase
     /** @test */
     public function admin_cannot_destroy_self()
     {
+        $this->withExceptionHandling();
         $admins = create(Admin::class, [], 2);
         $auth = $this->signJwt($admins->get(1));
-        $this->expectException('App\Exceptions\InvalidRequestException');
         $result = $this->json('DELETE', '/api/admin/admins/'. $admins->get(1)->id, [], $auth);
         $result->assertStatus(422);
     }
@@ -114,9 +113,10 @@ class AdminTest extends AdminTestCase
     /** @test */
     public function admin_cannot_update_equal_username_else_admin()
     {
+        $this->withExceptionHandling();
         $admins = create(Admin::class, [], 2);
         $auth = $this->signJwt($admins->get(0));
-        $result = $this->json('PUT', '/api/admin/admins/' .$admins->get(1)->id, [
+        $result = $this->json('PUT', '/api/admin/admins/' .$admins->get(0)->id, [
             'name' => $admins->get(0)->username,
         ], $auth);
         $result->assertStatus(422);
@@ -125,6 +125,7 @@ class AdminTest extends AdminTestCase
     /** @test */
     public function admin_cannot_update_self()
     {
+        $this->withExceptionHandling();
         $admins = create(Admin::class, [], 2);
         $auth = $this->signJwt($admins->get(0));
         $result = $this->json('PUT', '/api/admin/admins/' .$admins->get(0)->id, [

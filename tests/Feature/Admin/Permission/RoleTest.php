@@ -23,7 +23,9 @@ class RoleTest extends TestCase
     public function signed_in_user_can_view_roles()
     {
         $auth = $this->signJwt(create(Admin::class));
+
         factory(Role::class, 40)->create();
+
         $result = $this->json('GET', '/api/admin/role', [], $auth);
         $result->assertStatus(200);
         $this->assertCount(15, $result['data']);

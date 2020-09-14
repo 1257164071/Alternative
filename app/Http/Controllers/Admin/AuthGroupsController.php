@@ -19,7 +19,7 @@ class AuthGroupsController extends Controller
     public function treeIndex(AuthGroup $authGroup, RoleService $service)
     {
         $tree = $service->getRoleTree(0 ,$authGroup->get());
-        return response()->json($tree);
+        return new RoleResource($tree);
     }
 
 }
