@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use function GuzzleHttp\Psr7\str;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Tymon\JWTAuth\Contracts\JWTSubject;
@@ -51,5 +52,10 @@ class Admin extends Authenticatable implements JWTSubject
     public function getJWTCustomClaims()
     {
         return ['role' => 'admin'];
+    }
+
+    public function getAuthIdentifier()
+    {
+        return (string) $this->id;
     }
 }

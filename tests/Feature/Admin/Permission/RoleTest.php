@@ -4,146 +4,114 @@ namespace Tests\Feature\Admin\Permission;
 
 use App\Models\Admin;
 use App\Models\AuthGroup;
-use App\Models\Role;
+use App\Models\Roles;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Foundation\Testing\WithFaker;
+use Lauthz\Facades\Enforcer;
+use Tests\AdminTestCase;
 use Tests\TestCase;
 
-class RoleTest extends TestCase
+class RoleTest extends AdminTestCase
 {
     use RefreshDatabase;
 
     /** @test */
-    public function guests_may_not_view_roles()
+    public function cannot_view_role_list()
     {
-        $this->withExceptionHandling();
-        $this->json('GET', '/api/admin/role')->assertStatus(401);
+        $admin = create(Admin::class);
+        $auth = $this->signJwt($admin);
+        $this->expectException('Lauthz\Exceptions\UnauthorizedException');
+        $this->json('GET', '/api/admin/role', [], $auth)->assertStatus(422);
     }
 
     /** @test */
-    public function signed_in_user_can_view_roles()
+    public function can_view_role_list()
     {
-        $auth = $this->signJwt(create(Admin::class));
 
-        factory(Role::class, 40)->create();
+        $auth = $this->authorization( '/api/admin/role', 'GET');
+        $role = create(Roles::class, ['name' => 'admin', 'guard' => 'admin']);
+
+        $authGroups = create(AuthGroup::class,[], 2);
+        Enforcer::guard('admin')->addPermissionForUser($role->role, $authGroups->get(0)->rule, $authGroups->get(0)->action);
 
         $result = $this->json('GET', '/api/admin/role', [], $auth);
         $result->assertStatus(200);
-        $this->assertCount(15, $result['data']);
-        $this->assertEquals(40, $result['meta']['total']);
+        $result->assertJsonFragment([
+            'name' => 'admin',
+            'auth_group_ids' => [$authGroups->get(0)->id]
+        ]);
     }
 
     /** @test */
-    public function guests_may_not_create_role()
+    public function can_get_self_all_auth_group_list()
     {
-        $this->withExceptionHandling();
-        $this->json('POST', '/api/admin/role')->assertStatus(401);
-    }
-
-    /** @test */
-    public function signed_in_user_can_create_new_role()
-    {
-        $auth = $this->signJwt(create(Admin::class));
-        $role = make(Role::class);
-        $this->assertCount(0, Role::all());
-        $auth_group = create(AuthGroup::class, [], 4);
-        $role->bind_auth_group_ids = $auth_group->pluck('id')->toArray();
-        create(AuthGroup::class);
-        $result = $this->json('POST', '/api/admin/role', $role->toArray(), $auth);
-        $result->assertStatus(201);
-
-        $this->assertCount(5, AuthGroup::all());
-        $this->assertCount(1, Role::all());
-        $this->assertCount(4, Role::first()->auth_groups);
-    }
-
-    /** @test */
-    public function create_new_role_must_have_name()
-    {
-        $this->withExceptionHandling();
-        $auth = $this->signJwt(create(Admin::class));
-        $role = make(Role::class);
-        $role->name = '';
-        $this->json('POST', '/api/admin/role', $role->toArray(), $auth)->assertJsonValidationErrors('name');
-    }
-
-    /** @test */
-    public function create_new_role_must_have_guard()
-    {
-        $this->withExceptionHandling();
-        $auth = $this->signJwt(create(Admin::class));
-        $role = make(Role::class);
-        $role->guard = '';
-        $this->json('POST', '/api/admin/role', $role->toArray(), $auth)->assertJsonValidationErrors('guard');
-    }
-
-    /** @test */
-    public function bind_role_auth_group_must_have_auth_group()
-    {
-        $this->withExceptionHandling();
-        $auth = $this->signJwt(create(Admin::class));
-        $role = create(Role::class);
-        $this->json('POST', '/api/admin/role/' . $role->id . '/auth-group', [], $auth)->assertJsonValidationErrors('auth_group_ids');
-    }
-
-    /** @test */
-    public function bind_role_auth_group()
-    {
-        $auth = $this->signJwt(create(Admin::class));
-        $role = create(Role::class);
-        $list = factory(AuthGroup::class, 10)->create();
-
-        $this->assertCount(0, $role->auth_groups->all());
+        $admin = create(Admin::class);
+        $auth = $this->signJwt($admin);
         $data = [
-            'auth_group_ids' => $list->pluck('id')->toArray(),
+            ['id' => 1, 'name' => '主页', 'type' => 0, 'rule' => 'manage', 'action' => 'GET', 'parent_id' => 0, 'guard' => 'admin'],
+            ['id' => 9, 'name' => '个人信息', 'type' => 1, 'rule' => '/api/admin/me', 'action' => 'GET', 'parent_id' => 1, 'guard' => 'admin'],
+            ['id' => 10, 'name' => '分配权限', 'type' => 1, 'rule' => '/api/admin/auth-group-tree', 'action' => 'GET', 'parent_id' => 2, 'guard' => 'admin'],
         ];
-        $this->json('POST', '/api/admin/role/' . $role->id . '/auth-group', $data, $auth);
-        $this->assertCount(10, $role->refresh()->auth_groups->all());
-    }
-
-    /** @test */
-    public function get_role_auth_list()
-    {
-        $auth = $this->signJwt(create(Admin::class));
-        $role = create(Role::class);
-        $list = factory(AuthGroup::class, 2)->create();
-        foreach ($list as $key => $val) {
-            create(AuthGroup::class, [
-                'parent_id' => $val['id'],
-            ], 1);
+        foreach ($data as $item) {
+            Enforcer::guard('admin')->addPolicy('admin', $item['rule'], $item['action']);
         }
-        $ids = AuthGroup::get()->pluck('id')->toArray();
-        $role->auth_groups()->attach($ids[1]);
-        $this->json('GET', '/api/admin/role/' . $role->id . '/auth-group', [], $auth)
-            ->assertStatus(200)
-            ->assertJsonFragment(['id' => $ids[1]])
-            ->assertJsonMissing(['id' => $ids[2]]);
-    }
-
-    /** @test */
-    public function can_edit_role_list()
-    {
-        $auth = $this->signJwt(create(Admin::class));
-        $role = create(Role::class);
-        $authgroup = create(AuthGroup::class);
-
-        $role->name = '123456fds';
-        $role->bind_auth_group_ids = [$authgroup->id];
-        $result = $this->json('PUT', '/api/admin/role/' . $role->id, $role->toArray(), $auth);
+        AuthGroup::insert($data);
+        Enforcer::guard('admin')->addRoleForUser($admin->getAuthIdentifier(), 'admin');
+        $this->assertCount(count($data), Enforcer::guard('admin')->GetImplicitPermissionsForUser($admin->getAuthIdentifier()));
+        $result = $this->json('GET', '/api/admin/auth-group-tree', [], $auth);
         $result->assertStatus(200);
-        $role = Role::first();
-        $this->assertEquals($role->name, '123456fds');
-        $this->assertSame($role->auth_group_ids, [$authgroup->id]);
+        $resultJson = collect($data)->map(function ($item, $key){
+            return collect($item)->forget('type')->forget('parent_id');
+        });
+        $result->assertJsonFragment($resultJson->get(0)->toArray());
+        $result->assertJsonFragment($resultJson->get(1)->toArray());
     }
 
     /** @test */
-    public function admin_can_delete_role()
+    public function can_create_new_role()
     {
-        $auth = $this->signJwt(create(Admin::class));
-        $role = create(Role::class);
-        $this->assertCount(1, Role::all());
-        $result = $this->json('DELETE', '/api/admin/role/' . $role->id, [], $auth);
-        $result->assertStatus(204);
-        $this->assertCount(0, Role::all());
+        $auth = $this->authorization('/api/admin/role', 'POST');
+        $role = make(Roles::class);
+
+        $data = [
+            ['id' => 1, 'name' => '主页', 'type' => 0, 'rule' => 'manage', 'action' => 'GET', 'parent_id' => 0, 'guard' => 'admin'],
+            ['id' => 9, 'name' => '个人信息', 'type' => 1, 'rule' => '/api/admin/me', 'action' => 'GET', 'parent_id' => 1, 'guard' => 'admin'],
+            ['id' => 10, 'name' => '分配权限', 'type' => 1, 'rule' => '/api/admin/auth-group-tree', 'action' => 'GET', 'parent_id' => 2, 'guard' => 'admin'],
+        ];
+        AuthGroup::insert($data);
+
+        $ids = AuthGroup::all()->pluck('id');
+        $role = $role->toArray();
+        $role['bind_auth_group_ids'] = $ids;
+
+        $this->json('POST', '/api/admin/role', $role, $auth)->assertStatus(201);
+        $this->assertCount(1, Roles::all());
+        $role = Roles::first();
+        $this->assertCount(count($data), Enforcer::guard($role->guard)->getPermissionsForUser($role->role));
+    }
+
+    /** @test */
+    public function can_edit_role()
+    {
+        $auth = $this->authorization('/api/admin/role/*', 'PUT');
+
+        $role = create(Roles::class);
+        $authGroup = create(AuthGroup::class, [], 2);
+        Enforcer::guard($role->guard)->addPolicy($role->role, $authGroup->get(0)->rule, $authGroup->get(0)->action);
+
+        $newRole = $role->toArray();
+
+        $newRole['name'] = 'tefsdklf';
+        $newRole['remark'] = 'fdsfsd';
+        $newRole['bind_auth_group_ids'] = [$authGroup->get(1)->id];
+        $result = $this->json('PUT' ,'/api/admin/role/'.$role->id, $newRole, $auth);
+        $result->assertStatus(200);
+
+        $this->assertEquals($newRole['name'], $role->refresh()->name);
+        $this->assertEquals($newRole['remark'], $role->refresh()->remark);
+
+        $this->assertTrue(Enforcer::guard($role->guard)->hasPermissionForUser($role->refresh()->role, $authGroup->get(1)->rule, $authGroup->get(1)->action));
+        $this->assertFalse(Enforcer::guard($role->guard)->hasPermissionForUser($role->refresh()->role, $authGroup->get(0)->rule, $authGroup->get(0)->action));
     }
 
 

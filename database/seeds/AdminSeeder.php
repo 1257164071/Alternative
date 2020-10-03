@@ -2,6 +2,7 @@
 
 use Illuminate\Database\Seeder;
 use \App\Models\Admin;
+use Lauthz\Facades\Enforcer;
 
 class AdminSeeder extends Seeder
 {
@@ -17,6 +18,8 @@ class AdminSeeder extends Seeder
 
         $admin = Admin::find(1);
         $admin->username = 'admin';
+        $admin->password = \Hash::make('123456');
         $admin->save();
+        Enforcer::guard('admin')->addRoleForUser($admin->id, 'admin');
     }
 }

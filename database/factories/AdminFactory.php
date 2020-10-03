@@ -10,7 +10,6 @@ $factory->define(Admin::class, function (Faker $faker) {
         'username' => $faker->name,
         'password' => 123456,
         'name'  =>  'Administrator',
-        'role_id'  => 0
     ];
 });
 

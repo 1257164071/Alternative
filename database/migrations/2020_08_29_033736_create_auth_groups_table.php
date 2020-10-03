@@ -16,6 +16,7 @@ class CreateAuthGroupsTable extends Migration
         Schema::create('auth_groups', function (Blueprint $table) {
             $table->increments('id');
             $table->string('name');
+            $table->string('action');
             $table->tinyInteger('type')->default(\App\Models\AuthGroup::TYPE_MENU);
             $table->string('rule');
             $table->integer('parent_id');

@@ -13,6 +13,7 @@ $factory->define(AuthGroup::class, function (Faker $faker) {
         'rule' => $faker->slug.$faker->name,
         'parent_id' => 0,
         'guard' => 'admin',
+        'action' => $faker->randomKey(['POST','GET']),
     ];
 
 });

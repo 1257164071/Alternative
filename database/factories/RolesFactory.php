@@ -2,13 +2,13 @@
 
 /** @var \Illuminate\Database\Eloquent\Factory $factory */
 
-use App\Models\Role;
+use App\Models\Roles;
 use Faker\Generator as Faker;
 
-$factory->define(Role::class, function (Faker $faker) {
+$factory->define(Roles::class, function (Faker $faker) {
     return [
         'name' => $faker->name,
-        'guard' => 'admin',
+        'guard'=>'admin',
         'remark' => $faker->text,
     ];
 });

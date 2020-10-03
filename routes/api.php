@@ -19,20 +19,19 @@ Route::prefix('admin')->namespace('Admin')->group(function() {
 
     Route::post('authorizations', 'AuthorizationsController@store')->name('admin.authorizations.store');
 
-    Route::middleware('jwt.role:admin', 'jwt.auth')->group(function() {
+    Route::middleware('jwt.role:admin', 'jwt.auth', 'http_request:admin')->group(function() {
         config()->set('auth.defaults.guard', 'admin');
         Route::get('me', 'AdminsController@me');
-
 
         Route::get('auth_group', 'AuthGroupsController@index');
 
         Route::get('role', 'RolesController@index');
         Route::post('role', 'RolesController@store');
-        Route::put('role/{role}', 'RolesController@update');
-        Route::delete('role/{role}', 'RolesController@destroy');
-        Route::get('auth_group_tree', 'AuthGroupsController@treeIndex');
-        Route::post('role/{role}/auth-group', 'RolesController@bindAuthGroup');
-        Route::get('role/{role}/auth-group', 'RolesController@roleAuthGroup');
+        Route::put('role/{roles}', 'RolesController@update');
+        Route::delete('role/{roles}', 'RolesController@destroy');
+        Route::get('auth-group-tree', 'AuthGroupsController@treeIndex');
+        Route::post('role/{roles}/auth-group', 'RolesController@bindAuthGroup');
+        Route::get('role/{roles}/auth-group', 'RolesController@roleAuthGroup');
 
         Route::get('admins', 'AdminsController@index');
         Route::post('admins', 'AdminsController@store');

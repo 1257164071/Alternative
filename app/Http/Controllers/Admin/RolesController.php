@@ -2,73 +2,54 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Http\Resources\Admin\AuthGroupResource;
-use App\Http\Resources\Admin\MenuGroupResource;
 use App\Http\Resources\Admin\RoleResource;
 use App\Models\AuthGroup;
-use App\Models\Role;
-use App\Models\User;
+use App\Models\Roles;
 use App\Services\RoleService;
+use Lauthz\Facades\Enforcer;
 use Illuminate\Http\Request;
 
 class RolesController extends Controller
 {
-    public function index(Request $request, Role $role)
+    //
+    public function index()
     {
-        $list = $role->paginate($request->input('limit'));
+        $list = Roles::get()->append('auth_group_ids');
 
-        return RoleResource::collection($list);
+        return new RoleResource($list);
     }
 
-    public function store(Request $request)
-    {
-        $this->validate($request, [
-            'guard' => 'required',
-            'name' => 'required',
-        ]);
-        $role = Role::create([
-            'guard' =>  $request->post('guard'),
-            'name'  =>  $request->post('name'),
-            'remark'=>  $request->post('remark'),
-        ]);
-        $role->auth_groups()->attach($request->post('bind_auth_group_ids'));
-        return (new RoleResource($role))->response(201);
-    }
 
-    public function update(Request $request ,Role $role)
+    public function store(Request $request, Roles $roles, AuthGroup $authGroup)
     {
         $this->validate($request, [
-            'guard' => 'required',
-            'name' => 'required',
+            'name'  => ['required'],
+            'guard' => ['required'],
+            'remark' => ['max:255'],
         ]);
-
-        $role->update($request->all());
-        $role->auth_groups()->detach();
-        $role->auth_groups()->attach($request->post('bind_auth_group_ids'));
-        return (new RoleResource($role))->response(202);
+        $roles->fill($request->post())->save();
+        if ($bind_auth_group_ids = $request->post('bind_auth_group_ids')){
+            $authGroup->whereIn('id', $bind_auth_group_ids)->each(function ($item) use($roles) {
+                Enforcer::guard($roles->guard)->addPolicy($roles->role, $item['rule'], $item['action']);
+            });
+        }
+        return response()->json($roles, 201);
     }
 
-    public function destroy(Role $role)
+
+    public function update(Roles $roles, Request $request, AuthGroup $authGroup)
     {
-        $role->delete();
-        return response()->json([], 204);
+
+        $authGroupIds = $request->post('bind_auth_group_ids');
+
+        Enforcer::guard($roles->guard)->deletePermissionsForUser($roles->role);
+        $authGroup->whereIn('id', $authGroupIds)->each(function ($item) use ($roles) {
+            Enforcer::guard($roles->guard)->addPolicy($roles->role, $item['rule'], $item['action']);
+        });
+
+        $roles->update($request->all());
+        return response()->json([], 200);
     }
-
-    public function bindAuthGroup(Role $role, Request $request)
-    {
-        $this->validate($request, [
-            'auth_group_ids' => 'required',
-        ]);
-
-        $ids = $request->post('auth_group_ids');
-        $role->auth_groups()->attach($ids);
-    }
-
-    public function roleAuthGroup(Role $role)
-    {
-        return new MenuGroupResource($role->auth_groups);
-    }
-
 
 
 

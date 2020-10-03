@@ -3,7 +3,7 @@ namespace App\Services;
 
 use App\Exceptions\InvalidRequestException;
 use App\Models\AuthGroup;
-use App\Models\Role;
+use Lauthz\Facades\Enforcer;
 
 class RoleService
 {
@@ -32,22 +32,13 @@ class RoleService
             });
     }
 
-    public function authorize($role, $rule)
+    public function getRoleAuthGroupIds($auth_str)
     {
-        if (!$role instanceof Role){
-            $role = Role::find($role);
-        }
-        if ($role == null) {
-            throw new InvalidRequestException('角色不存在');
-        }
+        $auth_group = Enforcer::guard('admin')->GetImplicitPermissionsForUser($auth_str);
+        $rule = collect($auth_group)->pluck(1);
+        $action = collect($auth_group)->pluck(2);
 
-        $flag = $role->auth_groups()->where('rule', $rule)->exists();
-
-        if ($flag == false){
-            throw new InvalidRequestException('没有权限');
-        }
-        return true;
+        $list = AuthGroup::whereIn('rule' , $rule)->whereIn('action', $action)->get();
+        return $list;
     }
-
-
 }

@@ -3,9 +3,9 @@
 namespace Tests\Feature\Admin;
 
 use App\Models\Admin;
-use App\Models\Role;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
+use Lauthz\Facades\Enforcer;
 use Tests\AdminTestCase;
 use Tymon\JWTAuth\JWTAuth;
 
@@ -25,8 +25,8 @@ class AdminTest extends AdminTestCase
     {
         $user = ['username' => 'fdsfds'];
         $admin = factory(Admin::class)->create($user);
-        $auth = $this->signJwt($admin);
-// JWTAuth::guard('api')->parseToken()->authenticate()
+        $auth = $this->authorization('/api/admin/me', 'GET', $admin);
+
         $this->json('GET', '/api/admin/me', [], $auth)->assertStatus(200)->assertJsonFragment($user);
     }
 
@@ -35,7 +35,7 @@ class AdminTest extends AdminTestCase
     {
         $admins = create(Admin::class,[], 40);
 
-        $auth = $this->signJwt($admins->get(1));
+        $auth = $this->authorization('/api/admin/admins', 'GET', $admins->get(1));
 
         $result = $this->json('GET', '/api/admin/admins', [], $auth);
         $result->assertStatus(200);
@@ -46,7 +46,7 @@ class AdminTest extends AdminTestCase
     /** @test */
     public function admin_can_store_new_admin_and_bind_role()
     {
-        $auth = $this->signJwt(create(Admin::class));
+        $auth = $this->authorization('/api/admin/admins', 'POST');
 
         $admin = make(Admin::class);
         $admin = $admin->toArray();
@@ -60,7 +60,8 @@ class AdminTest extends AdminTestCase
     public function admin_cannot_create_repeat_admin_username()
     {
         $admin = create(Admin::class);
-        $auth = $this->signJwt($admin);
+        $auth = $this->authorization('/api/admin/admins', 'POST', $admin);
+
         $admin = make(Admin::class, ['username' => $admin->username]);
         $admin = $admin->toArray();
         $admin['password'] = 123456;
@@ -72,9 +73,10 @@ class AdminTest extends AdminTestCase
     /** @test */
     public function admin_cannot_destroy_self()
     {
-        $this->withExceptionHandling();
+
         $admins = create(Admin::class, [], 2);
-        $auth = $this->signJwt($admins->get(1));
+        $this->withExceptionHandling();
+        $auth = $this->authorization('/api/admin/admins/*', 'DELETE', $admins->get(1));
         $result = $this->json('DELETE', '/api/admin/admins/'. $admins->get(1)->id, [], $auth);
         $result->assertStatus(422);
     }
@@ -83,7 +85,7 @@ class AdminTest extends AdminTestCase
     public function admin_can_destroy_else_admin()
     {
         $admins = create(Admin::class, [], 2);
-        $auth = $this->signJwt($admins->get(0));
+        $auth = $this->authorization('/api/admin/admins/*', 'DELETE', $admins->get(0));
         $result = $this->json('DELETE', '/api/admin/admins/'. $admins->get(1)->id, [], $auth);
         $result->assertStatus(204);
         $this->assertCount(1, Admin::all());
@@ -93,7 +95,8 @@ class AdminTest extends AdminTestCase
     public function admin_can_update_else_admin()
     {
         $admins = create(Admin::class, [], 2);
-        $auth = $this->signJwt($admins->get(0));
+        $auth = $this->authorization('/api/admin/admins/*', 'PUT', $admins->get(0));
+
         $result = $this->json('PUT', '/api/admin/admins/' .$admins->get(1)->id, [
             'name' => '11111',
             'username' => '22222',
@@ -115,7 +118,7 @@ class AdminTest extends AdminTestCase
     {
         $this->withExceptionHandling();
         $admins = create(Admin::class, [], 2);
-        $auth = $this->signJwt($admins->get(0));
+        $auth = $this->authorization('/api/admin/admins/*', 'PUT', $admins->get(0));
         $result = $this->json('PUT', '/api/admin/admins/' .$admins->get(0)->id, [
             'name' => $admins->get(0)->username,
         ], $auth);
@@ -127,7 +130,7 @@ class AdminTest extends AdminTestCase
     {
         $this->withExceptionHandling();
         $admins = create(Admin::class, [], 2);
-        $auth = $this->signJwt($admins->get(0));
+        $auth = $this->authorization('/api/admin/admins/*', 'PUT', $admins->get(0));
         $result = $this->json('PUT', '/api/admin/admins/' .$admins->get(0)->id, [
             'name' => 'fsd',
         ], $auth);

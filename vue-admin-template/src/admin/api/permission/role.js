@@ -2,7 +2,7 @@ import request from '@admin/utils/request'
 
 export function getRoutes() {
   return request({
-    url: '/admin/auth_group_tree',
+    url: '/admin/auth-group-tree',
         // url: '/vue-element-admin/routes',
     method: 'get'
   })

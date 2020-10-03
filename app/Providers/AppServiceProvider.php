@@ -3,7 +3,9 @@
 namespace App\Providers;
 
 use App\Models\Admin;
+use App\Models\Roles;
 use App\Observers\Admin\AdminObserver;
+use App\Observers\Admin\RolesObserver;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -27,5 +29,6 @@ class AppServiceProvider extends ServiceProvider
     {
         //
         Admin::observe(AdminObserver::class);
+        Roles::observe(RolesObserver::class);
     }
 }
