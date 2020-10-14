@@ -114,5 +114,20 @@ class RoleTest extends AdminTestCase
         $this->assertFalse(Enforcer::guard($role->guard)->hasPermissionForUser($role->refresh()->role, $authGroup->get(0)->rule, $authGroup->get(0)->action));
     }
 
+    /** @test */
+    public function can_delete_role()
+    {
+        $auth = $this->authorization('/api/admin/role/*', 'DELETE');
+
+        $role = create(Roles::class);
+        $authGroup = create(AuthGroup::class);
+
+        $testRole = clone $role;
+        Enforcer::guard($role->guard)->addPolicy($role->role, $authGroup->rule, $authGroup->action);
+
+        $result = $this->json('DELETE', '/api/admin/role/'.$role->id, [], $auth);
+        $result->assertStatus(204);
+        $this->assertFalse(Enforcer::guard($testRole->guard)->hasPermissionForUser($testRole->role, $authGroup->rule, $authGroup->action));
+    }
 
 }

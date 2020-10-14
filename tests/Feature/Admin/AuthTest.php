@@ -75,4 +75,6 @@ class AuthTest extends AdminTestCase
 //        dd(Enforcer::guard('basic')->enforce("eve", "articles", "fff"));
 //
 //    }
+
+
 }

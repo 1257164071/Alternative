@@ -83,7 +83,7 @@ import { getRoutes, getRoles, addRole, deleteRole, updateRole } from '@admin/api
 const defaultRole = {
   name: '',
   remark: '',
-  guard: 'Admin',
+  guard: 'admin',
 }
 
 export default {

@@ -136,4 +136,5 @@ class AdminTest extends AdminTestCase
         ], $auth);
         $result->assertStatus(422);
     }
+
 }

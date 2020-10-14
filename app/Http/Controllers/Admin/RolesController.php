@@ -51,6 +51,13 @@ class RolesController extends Controller
         return response()->json([], 200);
     }
 
+    public function destroy(Roles $roles)
+    {
+        Enforcer::guard($roles->guard)->deletePermissionsForUser($roles->role);
+        $roles->delete();
+        return response()->json([], 204);
+    }
+
 
 
 }
