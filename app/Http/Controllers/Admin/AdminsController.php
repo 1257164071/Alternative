@@ -19,9 +19,9 @@ class AdminsController extends Controller
     public function index(Request $request, Admin $admin)
     {
 
-        $list = $admin->paginate($request->input('limit'));
+        $admins = $admin->paginate($request->input('limit'))->append('roles');
 
-        return AdminResource::collection($list);
+        return AdminResource::collection($admins);
     }
 
     public function store(Request $request, Admin $admin)

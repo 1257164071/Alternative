@@ -8,7 +8,7 @@ export function login(data) {
   })
 }
 
-export function getInfo(token) {
+export function getInfo() {
   return request({
     url: '/admin/me',
     method: 'get'
@@ -19,5 +19,13 @@ export function logout() {
   return request({
     url: '/vue-admin-template/user/logout',
     method: 'post'
+  })
+}
+
+export function adminList(data) {
+  return request({
+    url: '/admin/admins',
+    method: 'get',
+    data
   })
 }

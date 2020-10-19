@@ -1,6 +1,8 @@
 <template>
   <div class="app-container">
-    <el-button type="primary" @click="handleAddRole">新建角色</el-button>
+    <div class="filter-container">
+      <el-button  class="filter-item" type="primary" @click="handleAddRole">新建角色</el-button>
+    </div>
 
     <el-table :data="rolesList" style="width: 100%;margin-top:30px;" border>
       <el-table-column align="center" label="ID" min-width="50">
@@ -119,6 +121,12 @@ export default {
         }
       ],
       filterText: '',
+      temp: {
+        'avatar': '',
+        'name': '',
+        'username': '',
+        'password': '',
+      },
     }
   },
   computed: {
@@ -215,15 +223,15 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       })
-        .then(async() => {
-          await deleteRole(row.id)
-          this.rolesList.splice($index, 1)
-          this.$message({
-            type: 'success',
-            message: '删除成功!'
-          })
+      .then(async() => {
+        await deleteRole(row.id)
+        this.rolesList.splice($index, 1)
+        this.$message({
+          type: 'success',
+          message: '删除成功!'
         })
-        .catch(err => { console.error(err) })
+      })
+      .catch(err => { console.error(err) })
     },
     generateTree(routes, basePath = '/', checkedKeys) {
       const res = []
