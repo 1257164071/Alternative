@@ -70,7 +70,7 @@ export const constantRoutes = [
       {
         path: 'admin',
         name: 'admin.manager',
-        component: () => import('@admin/views/permission/admin'),
+        component: () => import('@admin/views/manage/admin'),
         meta: { title: '管理员管理', icon: 'form'}
       },
     ]

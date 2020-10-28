@@ -5,6 +5,7 @@ namespace App\Models;
 use function GuzzleHttp\Psr7\str;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Lauthz\Facades\Enforcer;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 
 /**
@@ -58,4 +59,11 @@ class Admin extends Authenticatable implements JWTSubject
     {
         return (string) $this->id;
     }
+
+    public function getRolesAttribute()
+    {
+        $roles = Enforcer::getRolesForUser($this->getAuthIdentifier());
+        return implode(',', $roles);
+    }
+
 }

@@ -39,6 +39,10 @@ class AdminTest extends AdminTestCase
 
         $result = $this->json('GET', '/api/admin/admins', [], $auth);
         $result->assertStatus(200);
+        $result->assertJsonStructure(['meta',
+            'data'=> [
+                '*'=>['id','roles', 'username', 'name']
+            ]]);
         $this->assertCount(15, $result['data']);
         $this->assertEquals(40 ,$result['meta']['total']);
     }
@@ -100,7 +104,7 @@ class AdminTest extends AdminTestCase
         $result = $this->json('PUT', '/api/admin/admins/' .$admins->get(1)->id, [
             'name' => '11111',
             'username' => '22222',
-            'password'  =>  \Hash::make('123456AACC'),
+            'password'  =>  '123456AACC',
         ], $auth);
         $result->assertStatus(200);
         $admin = Admin::find( $admins->get(1)->id);
@@ -136,4 +140,7 @@ class AdminTest extends AdminTestCase
         ], $auth);
         $result->assertStatus(422);
     }
+
+
+
 }
