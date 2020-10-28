@@ -37,25 +37,27 @@
     <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogVisible">
       <el-form ref="adminFrom" :model="temp" label-width="80px" label-position="left">
         <el-form-item label="头像">
-          <el-upload
-            class="avatar-uploader"
-            action="https://jsonplaceholder.typicode.com/posts/"
-            :show-file-list="false"
-            :on-success="handleAvatarSuccess"
-            :before-upload="beforeAvatarUpload"
-          ></el-upload>
+            <upload v-model="temp.avatar" :default-image.sync="temp.avatar" />
         </el-form-item>
 
         <el-form-item label="用户名" prop="name">
-          <el-input v-model="temp.name"/>
+          <el-input v-model="temp.name" placeholder="请输入用户名"/>
         </el-form-item>
         <el-form-item label="登录帐号" prop="username">
-          <el-input v-model="temp.username"></el-input>
+          <el-input v-model="temp.username" placeholder="请输入登录帐号"></el-input>
+        </el-form-item>
+        <el-form-item label="角色" prop="roles">
+          <el-select  v-model="temp.roles" clearable style="width: 100%" >
+            <el-option v-for="item in rolesList" :key="item.key" :label="item.name" :value="item.role" />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="密码" prop="password">
+          <el-input v-model="temp.password" placeholder="请输入密码"></el-input>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogVisible = false">取消</el-button>
-        <el-button type="primary" @click="">提交</el-button>
+        <el-button type="primary" @click="dialogStatus==='create'?createData():updateData()">提交</el-button>
       </div>
     </el-dialog>
   </div>
@@ -63,10 +65,12 @@
 
 
 <script>
-  import { adminList } from '@admin/api/admin/user'
-
+  import { adminList, adminCreate, adminUpdate, adminDestroy } from '@admin/api/admin/user'
+  import { getRoles } from '@admin/api/permission/role'
+  import upload from '@admin/components/Upload/UploadAvatar'
   export default {
     name: 'AdminList',
+    components: { upload },
     data() {
       return {
         tableKey: 0,
@@ -87,11 +91,13 @@
         listQuery: {
           page: 1,
           limit: 20,
-        }
+        },
+        rolesList: null,
       }
     },
     created() {
       this.getList();
+      this.getRoles();
     },
     methods: {
       getList(){
@@ -101,35 +107,67 @@
           this.listLoading = false
         })
       },
+      getRoles(){
+        getRoles().then(response => {
+          this.rolesList = response.data.data;
+        })
+      },
       AdminCreate() {
         this.dialogVisible = true;
         this.dialogStatus = 'create';
       },
-      handleAdminUpdate() {
+      handleAdminUpdate(row) {
         this.dialogVisible = true;
-        this.dialogStatus = 'update'
+        this.dialogStatus = 'update';
+        this.temp = Object.assign({}, row)
       },
-      handleAdminDestroy() {
+      createData(){
+        adminCreate(this.temp).then(response => {
+          this.getList();
+          this.dialogVisible = false
+          this.$notify({
+            title: '成功',
+            message: '新用户添加成功',
+            type: 'success',
+            duration: 2000
+          })
+        })
+      },
+      updateData(){
+        adminUpdate(this.temp.id, this.temp).then(response => {
+          this.getList();
+          this.dialogVisible = false
+          this.$notify({
+            title: '成功',
+            message: '修改成功',
+            type: 'success',
+            duration: 2000
+          })
+        })
+      },
+      handleAdminDestroy(row) {
+
+        this.$confirm('此操作将永久删除该项目, 是否继续?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          adminDestroy(row.id).then(response => {
+            this.getList();
+            this.dialogVisible = false
+            this.$notify({
+              title: '成功',
+              message: '删除成功',
+              type: 'success',
+              duration: 2000
+            })
+          })
+        });
 
       },
-      handleAvatarSuccess(res, file) {
-        this.temp.avatar = res;
-      },
-      beforeAvatarUpload(file) {
-        const isJPG = file.type === 'image/jpeg';
-        if (!isJPG) {
-          this.$message.error('上传头像图片只能是 JPG 格式!');
-        }
-        const isLt2M = file.size / 1024 / 1024 < 5;
-        if (!isLt2M) {
-          this.$message.error('上传头像图片大小不能超过 5MB!');
-        }
-        return isJPG && isLt2M;
-      }
     }
   }
 </script>
 
-<style scoped>
-
+<style>
 </style>

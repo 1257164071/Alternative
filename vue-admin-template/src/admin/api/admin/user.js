@@ -29,3 +29,26 @@ export function adminList(data) {
     data
   })
 }
+
+export function adminCreate(data) {
+  return request({
+    url: '/admin/admins',
+    method: 'post',
+    data
+  })
+}
+
+export function adminUpdate(id, data) {
+  return request({
+    url: '/admin/admins/'+id,
+    method: 'put',
+    data
+  })
+}
+
+export function adminDestroy(id) {
+  return request({
+    url: '/admin/admins/'+id,
+    method: 'delete',
+  })
+}

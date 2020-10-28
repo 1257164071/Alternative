@@ -21,22 +21,26 @@ Route::prefix('admin')->namespace('Admin')->group(function() {
 
     Route::middleware('jwt.role:admin', 'jwt.auth', 'http_request:admin')->group(function() {
         config()->set('auth.defaults.guard', 'admin');
-        Route::get('me', 'AdminsController@me');
+        Route::middleware('http_request:admin')->group(function(){
+            Route::get('me', 'AdminsController@me');
 
-        Route::get('auth_group', 'AuthGroupsController@index');
+            Route::get('auth_group', 'AuthGroupsController@index');
 
-        Route::get('role', 'RolesController@index');
-        Route::post('role', 'RolesController@store');
-        Route::put('role/{roles}', 'RolesController@update');
-        Route::delete('role/{roles}', 'RolesController@destroy');
-        Route::get('auth-group-tree', 'AuthGroupsController@treeIndex');
-        Route::post('role/{roles}/auth-group', 'RolesController@bindAuthGroup');
-        Route::get('role/{roles}/auth-group', 'RolesController@roleAuthGroup');
+            Route::get('role', 'RolesController@index');
+            Route::post('role', 'RolesController@store');
+            Route::put('role/{roles}', 'RolesController@update');
+            Route::delete('role/{roles}', 'RolesController@destroy');
+            Route::get('auth-group-tree', 'AuthGroupsController@treeIndex');
+            Route::post('role/{roles}/auth-group', 'RolesController@bindAuthGroup');
+            Route::get('role/{roles}/auth-group', 'RolesController@roleAuthGroup');
 
-        Route::get('admins', 'AdminsController@index');
-        Route::post('admins', 'AdminsController@store');
-        Route::delete('admins/{admin}', 'AdminsController@destroy');
-        Route::put('admins/{admin}', 'AdminsController@update');
+            Route::get('admins', 'AdminsController@index');
+            Route::post('admins', 'AdminsController@store');
+            Route::delete('admins/{admin}', 'AdminsController@destroy');
+            Route::put('admins/{admin}', 'AdminsController@update');
+        });
+
+        Route::post('images', 'ImagesController@store')->name('images.store');
     });
 
 });
