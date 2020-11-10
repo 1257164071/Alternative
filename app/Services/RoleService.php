@@ -1,7 +1,6 @@
 <?php
 namespace App\Services;
 
-use App\Exceptions\InvalidRequestException;
 use App\Models\AuthGroup;
 use Lauthz\Facades\Enforcer;
 

@@ -22,7 +22,7 @@ class Category extends Model
                 $category->path = '-';
             } else {
                 $category->level = $category->parent->level + 1;
-                $category->path = $category->path.$category->parent_id.'-';
+                $category->path = $category->parent->path.$category->parent_id.'-';
             }
         });
     }
@@ -49,6 +49,6 @@ class Category extends Model
 
     public function getFullNameAttribute()
     {
-        return $this->ancestors->puck('name')->push($this->name)->implode('-');
+        return $this->ancestors->pluck('name')->push($this->name)->implode('-');
     }
 }
