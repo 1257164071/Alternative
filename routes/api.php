@@ -38,6 +38,11 @@ Route::prefix('admin')->namespace('Admin')->group(function() {
             Route::post('admins', 'AdminsController@store');
             Route::delete('admins/{admin}', 'AdminsController@destroy');
             Route::put('admins/{admin}', 'AdminsController@update');
+
+            Route::get('categories', 'CategoriesController@index');
+            Route::post('categories', 'CategoriesController@store');
+            Route::put('categories/{category}', 'CategoriesController@update');
+            Route::delete('categories/{category}', 'CategoriesController@destroy');
         });
 
         Route::post('images', 'ImagesController@store')->name('images.store');

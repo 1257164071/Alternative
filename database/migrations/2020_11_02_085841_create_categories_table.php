@@ -21,7 +21,8 @@ class CreateCategoriesTable extends Migration
             $table->boolean('is_directory');
             $table->unsignedInteger('level');
             $table->string('path');
-            $table->string('image');
+            $table->string('image')->nullable();
+            $table->integer('sort')->nullable()->default(0);
             $table->timestamps();
         });
     }

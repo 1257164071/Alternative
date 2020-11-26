@@ -3,6 +3,7 @@
 namespace Tests\Unit;
 
 use App\Models\Category;
+use App\Services\CategoryService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -63,11 +64,24 @@ class CategoryTest extends TestCase
         $this->assertEquals($str, $categories[2]->full_name);
     }
 
+    /** @test */
+    public function can_get_categories_tree_list()
+    {
+        $crt = $this->createCategoryTree(3);
+        $crt2 = $this->createCategoryTree(3);
+        $service = (new CategoryService())->getCategoryTree();
+        $this->assertEquals($crt[0]->id, $service[0]['id']);
+        $this->assertEquals($crt[1]->id, $service[0]['children'][0]['id']);
+        $this->assertEquals($crt2[0]->id, $service[1]['id']);
+        $this->assertEquals($crt2[1]->id, $service[1]['children'][0]['id']);
+    }
+
     public function createCategoryTree($num)
     {
         $item = [];
         $category = collect();
         for ($i=0; $i<$num; $i++) {
+            $item['is_directory'] = false;
             $category[$i] = factory(Category::class)->create($item);
             $item = ['parent_id' => $category[$i]['id']];
         }
