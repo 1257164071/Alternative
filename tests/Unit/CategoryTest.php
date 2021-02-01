@@ -81,7 +81,7 @@ class CategoryTest extends TestCase
         $item = [];
         $category = collect();
         for ($i=0; $i<$num; $i++) {
-            $item['is_directory'] = false;
+            $item['is_directory'] = true;
             $category[$i] = factory(Category::class)->create($item);
             $item = ['parent_id' => $category[$i]['id']];
         }
