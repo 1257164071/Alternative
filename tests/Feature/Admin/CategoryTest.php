@@ -18,6 +18,7 @@ class CategoryTest extends AdminTestCase
         $testData = $this->createCategoryTree(3);
         $auth = $this->authorization('/api/admin/categories','GET', create(Admin::class, ['id' => 2]));
         $result = $this->json('GET', '/api/admin/categories',[] ,$auth);
+
         $result->assertStatus(200);
         $result->assertJsonFragment([
             'id' => $testData[0]['id'],
@@ -68,7 +69,7 @@ class CategoryTest extends AdminTestCase
         $category = create(Category::class);
 
         $result = $this->json('PUT', '/api/admin/categories/'.$category->id ,$data ,$auth);
-
+        echo 'fds';
         $result->assertJsonFragment($data);
         $result->assertStatus(200);
     }
@@ -76,6 +77,7 @@ class CategoryTest extends AdminTestCase
     /** @test */
     public function destroy_category_item()
     {
+
         $auth = $this->authorization('/api/admin/categories/*','DELETE', create(Admin::class, ['id' => 2]));
         $category = create(Category::class);
 

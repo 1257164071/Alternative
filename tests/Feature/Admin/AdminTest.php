@@ -38,6 +38,7 @@ class AdminTest extends AdminTestCase
         $auth = $this->authorization('/api/admin/admins', 'GET', $admins->get(1));
 
         $result = $this->json('GET', '/api/admin/admins', [], $auth);
+
         $result->assertStatus(200);
         $result->assertJsonStructure(['meta',
             'data'=> [
