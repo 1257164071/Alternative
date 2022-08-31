@@ -13,7 +13,14 @@ use Illuminate\Support\Facades\Route;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
+Route::prefix('recharge')->namespace('Api')->group(function(){
+    Route::get('me','UsersController@index');
 
+    Route::middleware('jwt.auth')->group(function(){
+        config()->set('auth.defaults.guard', 'user');
+
+    });
+});
 
 Route::prefix('admin')->namespace('Admin')->group(function() {
 

@@ -14,7 +14,7 @@ class CreateProductsTable extends Migration
     public function up()
     {
         Schema::create('products', function (Blueprint $table) {
-            $table->bigIncrements('id');
+            $table->increments('id');
             $table->string('title');
             $table->text('description');
             $table->string('image');
@@ -23,8 +23,8 @@ class CreateProductsTable extends Migration
             $table->unsignedInteger('sold_count')->default(0);
             $table->unsignedInteger('review_count')->default(0);
             $table->decimal('price', 10, 2);
-            $table->unsignedInteger('category_id')->nullable()->after('id');
-            $table->foreign('category_id')->references('id')->on('categories')->onDelete('set null');
+//            $table->integer('category_id')->nullable()->after('id');
+//            $table->foreign('category_id')->references('id')->on('categories')->onDelete('set null');
             $table->timestamps();
         });
     }
