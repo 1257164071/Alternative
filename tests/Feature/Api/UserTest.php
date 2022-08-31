@@ -19,6 +19,15 @@ class UserTest extends UserTestCase
         ])->assertOk();
     }
 
+    /** @test */
+    public function wechart_login()
+    {
+        $this->json('POST', '/api/recharge/socials/wechat/authorizations',[
+            'code'  =>  '1',
+            'access_token'  =>  '12'
+        ])->assertOk();
+    }
+
 
 
 }
