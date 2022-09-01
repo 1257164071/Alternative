@@ -36,6 +36,7 @@ use Tymon\JWTAuth\Contracts\JWTSubject;
 class User extends Authenticatable implements JWTSubject
 {
     use Notifiable;
+    const GUARD_NAME = 'user';
 
     /**
      * The attributes that are mass assignable.

@@ -14,7 +14,6 @@ use Illuminate\Support\Facades\Route;
 |
 */
 Route::prefix('recharge')->namespace('Api')->group(function(){
-    Route::get('me','UsersController@index');
     // 用户注册
     Route::post('users', 'UsersController@store')
         ->name('users.store');
@@ -23,15 +22,16 @@ Route::prefix('recharge')->namespace('Api')->group(function(){
         ->where('social_type', 'wechat')
         ->name('socials.authorizations.store');
 
-    Route::middleware('jwt.auth')->group(function(){
-        config()->set('auth.defaults.guard', 'user');
-    });
     // 刷新token
     Route::put('authorizations/current', 'AuthorizationsController@update')
         ->name('authorizations.update');
     // 删除token
     Route::delete('authorizations/current', 'AuthorizationsController@destroy')
         ->name('authorizations.destroy');
+    Route::middleware('jwt.role:user', 'jwt.auth')->group(function() {
+//        config()->set('auth.defaults.guard', 'user');
+        Route::get('me','UsersController@me');
+    });
 
 });
 
@@ -41,7 +41,7 @@ Route::prefix('admin')->namespace('Admin')->group(function() {
     Route::post('authorizations', 'AuthorizationsController@store')->name('admin.authorizations.store');
 
     Route::middleware('jwt.role:admin', 'jwt.auth', 'http_request:admin')->group(function() {
-        config()->set('auth.defaults.guard', 'admin');
+//        config()->set('auth.defaults.guard', 'admin');
         Route::middleware('http_request:admin')->group(function(){
             Route::get('me', 'AdminsController@me');
 
