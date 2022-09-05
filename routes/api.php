@@ -31,6 +31,8 @@ Route::prefix('recharge')->namespace('Api')->group(function(){
     Route::middleware('jwt.role:user', 'jwt.auth')->group(function() {
 //        config()->set('auth.defaults.guard', 'user');
         Route::get('me','UsersController@me');
+        Route::post('telephone','RechargeController@telephone');
+        Route::post('power','RechargeController@power');
     });
 
 });

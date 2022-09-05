@@ -8,7 +8,7 @@ class Order extends Model
 {
 
     //
-    protected $fillable = ['no', 'user_id', 'recharge_type', 'closed','recharge_info', 'telephone', 'product_id', 'price', 'remark', 'paid_at','payment_no','refund_status','refund_no', 'status', 'extra'];
+    protected $fillable = ['recharge_status','recharge_json','no', 'user_id', 'recharge_type', 'closed', 'telephone', 'product_id', 'price', 'remark', 'paid_at','payment_no','refund_status','refund_no', 'status', 'extra'];
     protected $casts = [
         'extra'     => 'json',
         'recharge_info' =>  'json'
@@ -38,6 +38,14 @@ class Order extends Model
         self::RECHARGE_STATUS_DELIVERED => '已发起',
         self::RECHARGE_STATUS_RECEIVED  => '已成功',
     ];
+
+    const RECHARGE_TELEPHONE = 'telephone';
+    const RECHARGE_POWER = 'power';
+    public static $rechargeTypeMap = [
+        self::RECHARGE_TELEPHONE   => '话费充值',
+        self::RECHARGE_POWER => '电费充值',
+    ];
+
 
     protected static function boot()
     {

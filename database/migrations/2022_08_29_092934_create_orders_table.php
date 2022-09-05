@@ -17,11 +17,11 @@ class CreateOrdersTable extends Migration
             $table->bigIncrements('id');
             $table->string('no');
             $table->string('user_id');
-            $table->text('recharge_type');
+            $table->string('recharge_type');
             $table->string('recharge_status')->default(\App\Models\Order::RECHARGE_STATUS_PENDING);
-            $table->string('recharge_json')->nullable();
+            $table->text('recharge_json')->nullable();
             $table->text('telephone');
-            $table->string('product_id');
+            $table->string('product_id')->nullable();
             $table->decimal('price',10,2);
             $table->string("remark")->nullable();
             $table->string("paid_at")->nullable();
@@ -30,7 +30,7 @@ class CreateOrdersTable extends Migration
             $table->string("refund_no")->nullable();
             $table->tinyInteger('status')->nullable();
             $table->string('extra')->nullable();
-            $table->boolean('closed')->default(false);
+            $table->tinyInteger('closed')->nullable()->default(0);
             $table->timestamps();
         });
     }
