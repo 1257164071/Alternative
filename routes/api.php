@@ -34,6 +34,7 @@ Route::prefix('recharge')->namespace('Api')->group(function(){
         Route::post('telephone','RechargeController@telephone');
         Route::post('power','RechargeController@power');
     });
+    Route::get('card','RechargeController@card');
 
 });
 

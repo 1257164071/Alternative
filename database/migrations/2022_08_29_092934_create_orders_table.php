@@ -20,7 +20,7 @@ class CreateOrdersTable extends Migration
             $table->string('recharge_type');
             $table->string('recharge_status')->default(\App\Models\Order::RECHARGE_STATUS_PENDING);
             $table->text('recharge_json')->nullable();
-            $table->text('telephone');
+            $table->string('telephone');
             $table->string('product_id')->nullable();
             $table->decimal('price',10,2);
             $table->string("remark")->nullable();

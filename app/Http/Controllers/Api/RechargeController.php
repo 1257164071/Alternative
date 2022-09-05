@@ -3,7 +3,10 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Resources\Api\OrderResource;
+use App\Models\Card;
 use App\Models\Order;
+use Symfony\Component\HttpFoundation\ResponseHeaderBag;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -62,4 +65,68 @@ class RechargeController extends Controller
         });
         return new OrderResource($order->fresh());
     }
+    public function card()
+    {
+        $num = 100;
+        $price = 100.00;
+        $list = [];
+        $userid = 0;
+        for ($i=0; $i<$num; $i++){
+            $list[] = [
+                'user_id' => $userid,
+                'no'    =>  $this->makeCardPassword(),
+                'price' =>  $price,
+                'status'    =>  0,
+                'created_at'    =>  date('Y-m-d H:i:s'),
+                'updated_at'    =>  date('Y-m-d H:i:s'),
+            ];
+        }
+        \DB::transaction(function () use ($list){
+            \DB::table('card')->insert($list);
+        });
+        $res = \DB::table('card')->get();
+        return json_encode($res);
+    }
+    public function downloadfile($data = array(),$filename = "unknown") {
+        if (!empty($data)){
+            foreach($data as $key=>$val){
+                foreach ($val as $ck => $cv) {
+                    $data[$key][$ck]=iconv("UTF-8", "GB2312", $cv);
+                }
+                $data[$key]=implode(" ", $data[$key]);
+            }
+            $txt = implode("\n",$data);
+        }
+        $response = new StreamedResponse();
+        $response->setCallBack(function () use($txt) {
+            echo $txt;
+        });
+        $disposition = $response->headers->makeDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT, 'logs.txt');
+        $response->headers->set('Content-Disposition', $disposition);
+
+        return $response;
+
+        exit();
+    }
+    public function  makeCardPassword() {
+        $code = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        $rand = $code[rand(0,25)]
+            .strtoupper(dechex(date('m')))
+            .date('d').substr(time(),-5)
+            .substr(microtime(),2,5)
+            .sprintf('%02d',rand(0,99));
+        for(
+            $a = md5( $rand, true ),
+            $s = '0123456789ABCDEFGHIJKLMNOPQRSTUV',
+            $d = '',
+            $f = 0;
+            $f < 8;
+            $g = ord( $a[ $f ] ),
+            $d .= $s[ ( $g ^ ord( $a[ $f + 8 ] ) ) - $g & 0x1F ],
+            $f++
+        );
+        return  $d;
+    }
+
+
 }

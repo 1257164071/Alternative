@@ -35,4 +35,17 @@ class OrderTest extends UserTestCase
 
     }
 
+    /** @test */
+    public function card_test()
+    {
+        $user = factory(User::class)->create();
+        $token = \Auth::guard('user')->login($user);
+        $response = $this->json('GET', '/api/recharge/card', [
+            'amount'=>100,
+            'isp'   =>  1,
+            'telephone' =>  18165297620,
+        ],['Authorization'=>'Bearer '.$token])->assertStatus(200);
+
+    }
+
 }
