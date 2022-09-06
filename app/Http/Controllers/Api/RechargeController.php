@@ -2,9 +2,12 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Exceptions\InvalidRequestException;
 use App\Http\Resources\Api\OrderResource;
 use App\Models\Card;
 use App\Models\Order;
+use App\Models\User;
+use http\Exception\InvalidArgumentException;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use Illuminate\Http\Request;
@@ -28,6 +31,7 @@ class RechargeController extends Controller
                 'telephone' =>  $request->post('telephone'),
                 'price' =>  $request->post('amount')*$this->tel_config[$request->post('isp')],
                 'recharge_type' =>  Order::RECHARGE_TELEPHONE,
+                'recharge' =>  $request->post('amount'),
                 'recharge_json' => json_encode([
                     'amount'    =>  $request->post('amount'),
                     'isp'   =>  $request->post('isp'),
@@ -49,6 +53,7 @@ class RechargeController extends Controller
                 'isp'   =>  $request->post('isp'),
                 'telephone' =>  $request->post('telephone'),
                 'price' =>  $request->post('amount')*0.93,
+                'recharge' =>  $request->post('amount'),
                 'recharge_type' =>  Order::RECHARGE_POWER,
                 'recharge_json' => json_encode([
                     'amount'    =>  $request->post('amount'),
@@ -65,6 +70,27 @@ class RechargeController extends Controller
         });
         return new OrderResource($order->fresh());
     }
+
+
+    public function opencard(Request $request){
+        $card = Card::where(['no'=>$request->all('card_no')])->first();
+        if ($card == ''){
+            throw new InvalidRequestException('卡号错误', 400);
+        }
+        if ($card->status == 1){
+            throw new InvalidRequestException('该卡已被使用', 400);
+        }
+        $user = \Auth::user();
+
+        \DB::transaction(function () use ($user, $card){
+            $card->user_id = $user->id;
+            $card->status = 1;
+            $card->use_date = date('Y-m-d H:i:s');
+            $user->addRecharge($card->price);
+            $card->save();
+        });
+    }
+
     public function card()
     {
         $num = 100;
@@ -127,6 +153,7 @@ class RechargeController extends Controller
         );
         return  $d;
     }
+
 
 
 }

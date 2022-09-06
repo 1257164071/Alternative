@@ -23,6 +23,7 @@ class CreateOrdersTable extends Migration
             $table->string('telephone');
             $table->string('product_id')->nullable();
             $table->decimal('price',10,2);
+            $table->decimal('recharge',10,2);
             $table->string("remark")->nullable();
             $table->string("paid_at")->nullable();
             $table->string("payment_no")->nullable();

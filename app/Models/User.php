@@ -75,5 +75,28 @@ class User extends Authenticatable implements JWTSubject
     {
         return ['role' => 'user'];
     }
+    public function balance_log()
+    {
+        return $this->hasMany(Balancelog::class, 'user_id');
+    }
+
+
+    public function addRecharge($price)
+    {
+        $this->increment('wallet',$price);
+        $this->balance_log()->create([
+            'price' =>  $price,
+            'status'    =>  1,
+        ]);
+    }
+    public function decRecharge($price)
+    {
+        $this->decrement('wallet', $price);
+        $this->balance_log()->create([
+            'price' =>  $price,
+            'status'    =>  2,
+        ]);
+
+    }
 
 }

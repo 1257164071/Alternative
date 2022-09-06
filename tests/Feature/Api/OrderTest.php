@@ -3,8 +3,10 @@
 namespace Tests\Feature\Api;
 
 use App\Models\Admin;
+use App\Models\Card;
 use App\Models\Order;
 use App\Models\User;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\UserTestCase;
 use Lauthz\Facades\Enforcer;
@@ -46,6 +48,32 @@ class OrderTest extends UserTestCase
             'telephone' =>  18165297620,
         ],['Authorization'=>'Bearer '.$token])->assertStatus(200);
 
+    }
+    /** @test */
+    public function card_open()
+    {
+
+        $this->card_test();
+        $user = factory(User::class)->create();
+        $token = \Auth::guard('user')->login($user);
+
+        $card = Card::find(1);
+
+        $response = $this->json('POST', '/api/recharge/opencard', [
+            'card_no'=> $card->no,
+        ],['Authorization'=>'Bearer '.$token])->assertStatus(200);
+
+    }
+
+    /** @test */
+    public function user_money_info()
+    {
+        $user = factory(User::class)->create();
+        $token = \Auth::guard('user')->login($user);
+
+        $response = $this->json('POST', '/api/recharge/opencard', [
+            'card_no'=> '',
+        ],['Authorization'=>'Bearer '.$token])->assertStatus(200);
     }
 
 }

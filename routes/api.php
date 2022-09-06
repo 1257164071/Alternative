@@ -33,8 +33,10 @@ Route::prefix('recharge')->namespace('Api')->group(function(){
         Route::get('me','UsersController@me');
         Route::post('telephone','RechargeController@telephone');
         Route::post('power','RechargeController@power');
+        Route::post('opencard','RechargeController@opencard');
     });
     Route::get('card','RechargeController@card');
+
 
 });
 
