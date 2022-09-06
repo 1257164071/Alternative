@@ -79,6 +79,10 @@ class User extends Authenticatable implements JWTSubject
     {
         return $this->hasMany(Balancelog::class, 'user_id');
     }
+    public function use_card()
+    {
+        return $this->hasMany(Card::class, 'user_id');
+    }
 
 
     public function addRecharge($price)

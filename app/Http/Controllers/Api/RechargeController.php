@@ -91,6 +91,24 @@ class RechargeController extends Controller
         });
     }
 
+    public function getmoneyinfo(){
+        $user = \Auth::user();
+        $array = [
+            'kaika' =>  \DB::table('balance_log')->where(['status'=>1,'user_id'=>$user->id])->sum('price'),
+            'youhui'    =>  \DB::table('balance_log')->where(['status'=>2, 'user_id'=>$user->id])->sum('price'),
+            'chongzhi'  =>  \DB::table('orders')->where(['user_id'=>$user->id,'refund_status'=>Order::RECHARGE_STATUS_RECEIVED])->sum('recharge'),
+        ];
+        return json_encode($array);
+    }
+
+    public function openlist(Request $request){
+//        $statuses = \Auth::user()->balance_log()
+        $statuses = \Auth::user()->use_card()
+            ->orderBy('use_date', 'desc')
+            ->paginate(20);
+        return json_encode(['data'=>$statuses]);
+    }
+
     public function card()
     {
         $num = 100;

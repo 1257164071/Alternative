@@ -71,7 +71,7 @@ class OrderTest extends UserTestCase
         $user = factory(User::class)->create();
         $token = \Auth::guard('user')->login($user);
 
-        $response = $this->json('POST', '/api/recharge/opencard', [
+        $response = $this->json('GET', '/api/recharge/getmoneyinfo', [
             'card_no'=> '',
         ],['Authorization'=>'Bearer '.$token])->assertStatus(200);
     }
