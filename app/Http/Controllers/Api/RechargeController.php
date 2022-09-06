@@ -109,6 +109,13 @@ class RechargeController extends Controller
         return json_encode(['data'=>$statuses]);
     }
 
+    public function uselist(Request $request){
+        $statuses = \Auth::user()->balance_log()
+            ->orderBy('created_at', 'desc')
+            ->paginate(20);
+        return json_encode(['data'=>$statuses]);
+    }
+
     public function card()
     {
         $num = 100;
