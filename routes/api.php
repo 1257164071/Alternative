@@ -30,6 +30,7 @@ Route::prefix('recharge')->namespace('Api')->group(function(){
         ->name('authorizations.destroy');
 
     Route::any('notify199212','NotifyController@recharege');
+    Route::any('payment/wechat/notify', 'NotifyController@wechatNotify')->name('payment.wechat.notify');
 
     Route::middleware('jwt.role:user', 'jwt.auth')->group(function() {
 //        config()->set('auth.defaults.guard', 'user');
