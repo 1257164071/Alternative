@@ -37,6 +37,7 @@ Route::prefix('recharge')->namespace('Api')->group(function(){
         Route::get('getmoneyinfo','RechargeController@getmoneyinfo');
         Route::get('openlist','RechargeController@openlist');
         Route::get('uselist','RechargeController@uselist');
+        Route::get('orders','OrdersController@index');
 
 
     });

@@ -6,6 +6,7 @@ use App\Exceptions\InvalidRequestException;
 use App\Http\Resources\Api\OrderResource;
 use App\Models\Card;
 use App\Models\Order;
+use App\Models\Typecate;
 use App\Models\User;
 use http\Exception\InvalidArgumentException;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
@@ -23,18 +24,21 @@ class RechargeController extends Controller
     public function telephone(Request $request)
     {
         $user = $request->user();
-        $post = $request->post();
-        $order = \DB::transaction(function () use ($user, $request){
+        $product = Typecate::query()->where(['amount'=>$request->post('amount'),'isp'=>$request->post('isp'),'type'=>1])->firstOrFail();
+
+
+        $order = \DB::transaction(function () use ($user, $request, $product){
             $order = new Order([
                 'user_id'   =>  $user->id,
-                'isp'   =>  $request->post('isp'),
+                'isp'   =>  $product->isp,
                 'telephone' =>  $request->post('telephone'),
-                'price' =>  $request->post('amount')*$this->tel_config[$request->post('isp')],
+                'price' =>  $product->price+1,
                 'recharge_type' =>  Order::RECHARGE_TELEPHONE,
-                'recharge' =>  $request->post('amount'),
+                'recharge' =>  $product->amount,
+                'product_id'    =>  $product->type_id,
                 'recharge_json' => json_encode([
-                    'amount'    =>  $request->post('amount'),
-                    'isp'   =>  $request->post('isp'),
+                    'amount'    =>  $product->amount,
+                    'isp'   =>  $product->isp,
                     'telephone' =>  $request->post('telephone'),
                 ])
             ]);
@@ -47,21 +51,23 @@ class RechargeController extends Controller
     {
         $user = $request->user();
         $post = $request->post();
-        $order = \DB::transaction(function () use ($user, $request){
+        $product = Typecate::query()->where(['type_id'=>$request->post('type_id')])->firstOrFail();
+        $order = \DB::transaction(function () use ($user, $request, $product){
             $order = new Order([
                 'user_id'   =>  $user->id,
                 'isp'   =>  $request->post('isp'),
                 'telephone' =>  $request->post('telephone'),
-                'price' =>  $request->post('amount')*0.93,
-                'recharge' =>  $request->post('amount'),
+                'price' =>  $product->price+1,
+                'recharge' =>  $product->amount,
                 'recharge_type' =>  Order::RECHARGE_POWER,
+                'product_id'    =>  $product->type_id,
                 'recharge_json' => json_encode([
                     'amount'    =>  $request->post('amount'),
                     'area'   =>  $request->post('area'),
                     'cardno' =>  $request->post('cardno'),
                     'electricardtype' =>  $request->post('electricardtype'),
                     'electritype' =>  $request->post('electritype'),
-                    'number' =>  $request->post('huhao'),
+                    'number' =>  $request->post('number'),
                     'telephone' =>  $request->post('telephone'),
                 ])
             ]);

@@ -3,12 +3,13 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use DateTimeInterface;
 
 class Order extends Model
 {
 
     //
-    protected $fillable = ['recharge_status','recharge_json','no', 'user_id', 'recharge_type', 'closed', 'telephone', 'product_id', 'price', 'remark', 'paid_at','payment_no','refund_status','refund_no', 'status', 'extra'];
+    protected $fillable = ['recharge_status','recharge_json','no', 'user_id', 'recharge_type', 'recharge','closed', 'telephone', 'product_id', 'price', 'remark', 'paid_at','payment_no','refund_status','refund_no', 'status', 'extra'];
     protected $casts = [
         'extra'     => 'json',
         'recharge_info' =>  'json'
@@ -29,12 +30,13 @@ class Order extends Model
         self::REFUND_STATUS_SUCCESS    => '退款成功',
         self::REFUND_STATUS_FAILED     => '退款失败',
     ];
+
     const RECHARGE_STATUS_PENDING = 'pending';
     const RECHARGE_STATUS_DELIVERED = 'delivered';
     const RECHARGE_STATUS_RECEIVED = 'received';
 
     public static $shipStatusMap = [
-        self::RECHARGE_STATUS_PENDING   => '未充值',
+        self::RECHARGE_STATUS_PENDING   => '待提交',
         self::RECHARGE_STATUS_DELIVERED => '已发起',
         self::RECHARGE_STATUS_RECEIVED  => '已成功',
     ];
@@ -62,6 +64,10 @@ class Order extends Model
                 }
             }
         });
+    }
+    protected function serializeDate(DateTimeInterface $date)
+    {
+        return $date->format($this->dateFormat ?: 'Y-m-d H:i:s');
     }
 
     public function user()

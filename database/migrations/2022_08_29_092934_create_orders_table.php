@@ -23,15 +23,18 @@ class CreateOrdersTable extends Migration
             $table->string('telephone');
             $table->string('product_id')->nullable();
             $table->decimal('price',10,2);
-            $table->decimal('recharge',10,2);
+            $table->decimal('recharge',10,2)->default(0);
             $table->string("remark")->nullable();
-            $table->string("paid_at")->nullable();
+            $table->dateTime("paid_at")->nullable();
             $table->string("payment_no")->nullable();
             $table->string('refund_status')->default(\App\Models\Order::REFUND_STATUS_PENDING);
             $table->string("refund_no")->nullable();
             $table->tinyInteger('status')->nullable();
             $table->string('extra')->nullable();
             $table->tinyInteger('closed')->nullable()->default(0);
+            $table->string('order_number')->nullable();
+            $table->text('recharge_order_json')->nullable();
+
             $table->timestamps();
         });
     }
