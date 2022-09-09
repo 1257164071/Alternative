@@ -30,10 +30,11 @@ class JWTRoleAuth extends BaseMiddleware
             return $next($request);
         }
         // 判断token角色。
-
         if ($tokenRole != $role) {
             throw new UnauthorizedHttpException('jwt-auth', 'User role error');
         }
+        config()->set('auth.defaults.guard', $role);
+
         return $next($request);
     }
 }

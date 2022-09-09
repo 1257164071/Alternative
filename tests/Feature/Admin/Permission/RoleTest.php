@@ -18,7 +18,7 @@ class RoleTest extends AdminTestCase
     /** @test */
     public function cannot_view_role_list()
     {
-        $admin = create(Admin::class);
+        $admin = create(Admin::class,['id' => 212]);
         $auth = $this->signJwt($admin);
         $this->expectException('Lauthz\Exceptions\UnauthorizedException');
         $this->json('GET', '/api/admin/role', [], $auth)->assertStatus(422);

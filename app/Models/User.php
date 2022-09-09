@@ -6,6 +6,7 @@ use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Tymon\JWTAuth\Contracts\JWTSubject;
+use DateTimeInterface;
 
 /**
  * App\Models\User
@@ -36,6 +37,7 @@ use Tymon\JWTAuth\Contracts\JWTSubject;
 class User extends Authenticatable implements JWTSubject
 {
     use Notifiable;
+    const GUARD_NAME = 'user';
 
     /**
      * The attributes that are mass assignable.
@@ -43,7 +45,8 @@ class User extends Authenticatable implements JWTSubject
      * @var array
      */
     protected $fillable = [
-        'name', 'email', 'password',
+        'name', 'phone', 'email', 'password', 'introduction', 'avatar',
+        'weixin_openid', 'weixin_unionid'
     ];
 
     /**
@@ -71,7 +74,43 @@ class User extends Authenticatable implements JWTSubject
 
     public function getJWTCustomClaims()
     {
-        return [];
+        return ['role' => 'user'];
+    }
+    public function balance_log()
+    {
+        return $this->hasMany(Balancelog::class, 'user_id');
+    }
+    public function use_card()
+    {
+        return $this->hasMany(Card::class, 'user_id');
+    }
+
+    public function orders()
+    {
+        return $this->hasMany(Order::class, 'user_id');
+    }
+
+    protected function serializeDate(DateTimeInterface $date)
+    {
+        return $date->format($this->dateFormat ?: 'Y-m-d H:i:s');
+    }
+
+    public function addRecharge($price)
+    {
+        $this->increment('wallet',$price);
+        $this->balance_log()->create([
+            'price' =>  $price,
+            'status'    =>  1,
+        ]);
+    }
+    public function decRecharge($price)
+    {
+        $this->decrement('wallet', $price);
+        $this->balance_log()->create([
+            'price' =>  $price,
+            'status'    =>  2,
+        ]);
+
     }
 
 }

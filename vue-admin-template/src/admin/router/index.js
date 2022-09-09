@@ -75,6 +75,33 @@ export const constantRoutes = [
       },
     ]
   },
+  {
+    path: '/product',
+    component: Layout,
+    name: 'permission',
+    redirect: '/product/product/index',
+    meta: { title: '商品管理', icon: 'form' },
+    children: [
+      {
+        path: 'role',
+        name: 'role.manager.index',
+        component: () => import('@admin/views/product/category'),
+        meta: { title: '主分类管理', icon: 'form' }
+      },
+      {
+        path: 'product/create',
+        name: 'product.create',
+        component: () => import('@admin/views/product/product/create'),
+        meta: { title: '发布商品', icon: 'form'}
+      },
+      {
+        path: 'admin',
+        name: 'admin.manager',
+        component: () => import('@admin/views/manage/admin'),
+        meta: { title: '商品列表', icon: 'form'}
+      },
+    ]
+  },
 
   // 404 page must be placed at the end !!!
   { path: '*', redirect: '/404', hidden: true }

@@ -3,10 +3,9 @@
 namespace Tests\Feature\Admin;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
-use Tests\TestCase;
+use Tests\AdminTestCase;
 
-class ImageTest extends TestCase
+class ProductTest extends AdminTestCase
 {
     use RefreshDatabase;
 

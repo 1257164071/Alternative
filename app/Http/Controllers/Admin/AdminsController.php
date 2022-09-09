@@ -60,7 +60,7 @@ class AdminsController extends Controller
 
     public function update(Admin $admin,Request $request)
     {
-        if ($admin->id == $request->user()->id) {
+        if ($admin->id == $request->user()->id){
             throw new InvalidRequestException('无法对此用户进行操作',422);
         }
         $temp = $request->all();

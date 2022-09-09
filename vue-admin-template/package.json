@@ -16,7 +16,8 @@
   "dependencies": {
     "axios": "0.18.1",
     "core-js": "3.6.5",
-    "element-ui": "2.13.2",
+    "egrid": "^1.1.2",
+    "element-ui": "^2.13.2",
     "fuse.js": "^6.4.1",
     "js-cookie": "2.2.0",
     "normalize.css": "7.0.0",
@@ -24,6 +25,7 @@
     "path-to-regexp": "2.4.0",
     "screenfull": "^5.0.2",
     "vue": "2.6.10",
+    "vue-json-pretty": "^1.7.1",
     "vue-router": "3.0.6",
     "vuex": "3.1.0",
     "webpack-cli": "^3.3.12",
