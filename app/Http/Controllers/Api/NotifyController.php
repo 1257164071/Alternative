@@ -14,6 +14,7 @@ class NotifyController extends Controller
         $out_trade_num = $request->get('out_trade_num');
         $order = Order::query()->where(['no'=>$out_trade_num])->first();
         if ($order == ''){
+            echo 'fail';
             return false;
         }
         switch ($request->get('state')){
@@ -22,9 +23,10 @@ class NotifyController extends Controller
                 $order->notify_order_json = json_encode($request->all());
                 $order->save();
                 echo 'success';
-                break;
+                return true;
         }
         echo 'fail';
+        return false;
     }
 
     public function wechatNotify()

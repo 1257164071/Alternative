@@ -48,10 +48,7 @@ class MonkeyService
         dump($responseXml);die;
 
     }
-    public function recharge($order){
-        if ($order->pay_at == ''){
-            return false;
-        }
+    public function recharge(Order $order){
 
         $url = $this->baseUrl.$this->urlList['recharge'];
         $headers = array("Content-type:application/x-www-form-urlencoded");
@@ -92,7 +89,6 @@ class MonkeyService
         $responseXml = $this->curlRequest($url, "POST", $headers, $params);
         $response = json_decode($responseXml,true);
 //        $response = json_decode('{"errno":0,"errmsg":"提交成功","data":{"id":1673,"order_number":"HMA2209091673","mobile":"17669125149","product_id":34,"total_price":"92.00","create_time":1662699751,"guishu":"山东临沂","title":"联通100元话费","out_trade_num":"20220909050231766724"}}',true);
-
         if ($response['errno'] == 0){
             $order->order_number = $response['data']['order_number'];
             $order->recharge_order_json = $responseXml;

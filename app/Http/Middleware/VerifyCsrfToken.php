@@ -13,5 +13,8 @@ class VerifyCsrfToken extends Middleware
      */
     protected $except = [
         //
+        'payment/wechat/notify',
+        'notify199212',
+
     ];
 }
