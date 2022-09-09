@@ -28,6 +28,9 @@ Route::prefix('recharge')->namespace('Api')->group(function(){
     // 删除token
     Route::delete('authorizations/current', 'AuthorizationsController@destroy')
         ->name('authorizations.destroy');
+
+    Route::any('notify199212','NotifyController@recharege');
+
     Route::middleware('jwt.role:user', 'jwt.auth')->group(function() {
 //        config()->set('auth.defaults.guard', 'user');
         Route::get('me','UsersController@me');

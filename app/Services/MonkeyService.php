@@ -9,6 +9,7 @@ class MonkeyService
     {
         $this->apikey = env('MONKEY_KEY');
         $this->baseUrl = env('MONKEY_BASE_URL');
+        $this->notifyUrl = env('MONKEY_NOTIFY_URL');
     }
 
     protected $apikey = '';
@@ -48,9 +49,11 @@ class MonkeyService
 
     }
     public function recharge($order){
+        if ($order->pay_at == ''){
+            return false;
+        }
 
         $url = $this->baseUrl.$this->urlList['recharge'];
-
         $headers = array("Content-type:application/x-www-form-urlencoded");
 
         if ($order->recharge_type == 'telephone'){

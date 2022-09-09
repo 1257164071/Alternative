@@ -34,6 +34,7 @@ class CreateOrdersTable extends Migration
             $table->tinyInteger('closed')->nullable()->default(0);
             $table->string('order_number')->nullable();
             $table->text('recharge_order_json')->nullable();
+            $table->text('notify_order_json')->nullable();
 
             $table->timestamps();
         });
